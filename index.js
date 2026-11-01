@@ -1,10 +1,12 @@
 import express from  'express'
 import { MongoClient } from 'mongodb';
 import 'dotenv/config'
+import cors from 'cors'
 const app = express()
 const port = process.env.PORT || 5000;
 
-
+app.use(cors())
+app.use(express.json())
 const client = new MongoClient(process.env.MONGODB_URI);
 
 export async function connectToMongoDB() {
@@ -17,7 +19,17 @@ export async function connectToMongoDB() {
           }
 }
 
- connectToMongoDB();
+const mongoClient =await connectToMongoDB();
+const db = mongoClient.db("somaj")
+const eventCollection =db.collection("event")
+
+
+ app.post('/event', async(req, res) =>{
+    const data = req.body
+    const result = await eventCollection.insertOne(data) 
+    console.log(result)      
+          res.send(result)
+ })
 //http://localhost:5000
 
 app.get('/', (req, res) => {
