@@ -43,6 +43,8 @@ const eventCollection =db.collection("event")
           res.send(result)
  })
 
+ //Edit
+
  app.patch('/event/:id', async (req, res) =>{
       const {id} =req.params
       const updatedData = req.body
@@ -51,6 +53,14 @@ const eventCollection =db.collection("event")
             { $set: updatedData }    
       )
       res.status(200).json(result)
+ })
+
+ //Delate 
+
+ app.delete('/event/:id', async(req, res) =>{
+  const {id} = req.params
+  const result = await eventCollection.deleteOne({_id: new ObjectId(id)})
+  res.json(result)
  })
 
 
