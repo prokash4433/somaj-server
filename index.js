@@ -43,6 +43,16 @@ const eventCollection =db.collection("event")
           res.send(result)
  })
 
+ app.patch('/event/:id', async (req, res) =>{
+      const {id} =req.params
+      const updatedData = req.body
+      const result = await eventCollection.updateOne(
+        {_id: new ObjectId(id)},
+            { $set: updatedData }    
+      )
+      res.status(200).json(result)
+ })
+
 
 //http://localhost:5000
 
