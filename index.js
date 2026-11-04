@@ -24,6 +24,17 @@ const db = mongoClient.db("somaj")
 const eventCollection =db.collection("event")
 
 
+const verifyApi = (req, res, next) => {
+      const authHeader = req.headers.authorization
+      console.log(authHeader)
+
+      if (authHeader !== "user logged in") {
+            return res.status(401).send({ msg: "Unauthorize!" })
+      }
+      next()
+}
+
+
  app.post('/event', async(req, res) =>{
     const data = req.body
     const result = await eventCollection.insertOne(data) 
@@ -37,7 +48,9 @@ const eventCollection =db.collection("event")
           
  })
 
- app.get('/event/:id', async(req, res) => {
+ app.get('/event/:id',
+       verifyApi,   
+  async(req, res) => {
           const {id} = req.params
           const result = await eventCollection.findOne({_id:new ObjectId(id)})
           res.send(result)
