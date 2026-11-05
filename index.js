@@ -57,7 +57,7 @@ app.post('/event', verifyToken,  async(req, res) =>{
           res.send(result)
  });
 
- app.get('/events', async(req,res) => {
+app.get('/events', verifyToken, async(req,res) => {
           const result = await eventCollection.find().toArray()
           res.send(result)
           
