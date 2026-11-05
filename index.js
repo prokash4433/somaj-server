@@ -47,15 +47,10 @@ const verifyToken = async (req, res, next) => {
             return res.status(500).send({ msg: "Server Error!" })  
       }
 
-
-
-
-
-     
 }
 
 
- app.post('/event', async(req, res) =>{
+app.post('/event', verifyToken,  async(req, res) =>{
     const data = req.body
     const result = await eventCollection.insertOne(data) 
     console.log(result)      
@@ -78,7 +73,7 @@ const verifyToken = async (req, res, next) => {
 
  //Edit
 
- app.patch('/event/:id', async (req, res) =>{
+app.patch('/event/:id', verifyToken,  async (req, res) =>{
       const {id} =req.params
       const updatedData = req.body
       const result = await eventCollection.updateOne(
@@ -90,7 +85,7 @@ const verifyToken = async (req, res, next) => {
 
  //Delate 
 
- app.delete('/event/:id', async(req, res) =>{
+app.delete('/event/:id', verifyToken, async(req, res) =>{
   const {id} = req.params
   const result = await eventCollection.deleteOne({_id: new ObjectId(id)})
   res.json(result)
