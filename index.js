@@ -64,7 +64,7 @@ app.get('/events', async(req,res) => {
  })
 
  app.get('/event/:id',
-       verifyToken,   
+           
   async(req, res) => {
           const {id} = req.params
           const result = await eventCollection.findOne({_id:new ObjectId(id)})
