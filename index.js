@@ -2,6 +2,7 @@ import express from  'express'
 import { MongoClient, ObjectId } from 'mongodb';
 import 'dotenv/config'
 import cors from 'cors'
+import { createRemoteJWKSet, jwtVerify } from 'jose';
 const app = express()
 const port = process.env.PORT || 5000;
 
@@ -24,14 +25,33 @@ const db = mongoClient.db("somaj")
 const eventCollection =db.collection("event")
 
 
-const verifyApi = (req, res, next) => {
+const verifyToken = async (req, res, next) => {
       const authHeader = req.headers.authorization
-      console.log(authHeader)
-
-      if (authHeader !== "user logged in") {
-            return res.status(401).send({ msg: "Unauthorize!" })
+      if(!authHeader){
+            return res.status(401).send({ msg: "Unauthorize!" })    
       }
-      next()
+
+       const token = authHeader.split(" ")[1]
+       if(!token){
+             return res.status(401).send({ msg: "Unauthorize!" })   
+       }
+        
+      const JWKS = createRemoteJWKSet(new URL('http://localhost:3000/api/auth/jwks'))
+
+      
+
+      try {
+            const { payload } = await jwtVerify(token, JWKS)
+            next(); 
+      } catch (error) {
+            return res.status(500).send({ msg: "Server Error!" })  
+      }
+
+
+
+
+
+     
 }
 
 
@@ -49,7 +69,7 @@ const verifyApi = (req, res, next) => {
  })
 
  app.get('/event/:id',
-       verifyApi,   
+       verifyToken,   
   async(req, res) => {
           const {id} = req.params
           const result = await eventCollection.findOne({_id:new ObjectId(id)})
